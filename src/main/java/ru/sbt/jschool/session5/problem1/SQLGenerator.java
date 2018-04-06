@@ -14,36 +14,28 @@ public class SQLGenerator {
 
     private <T> List<Map<String,String>> getData(Class<T> clazz){
 
-
         Field[] fields = clazz.getDeclaredFields();
-
         List<Map<String,String>> data = new ArrayList<>();
         Map<String,String> table = new HashMap<>();
+
         table.put("table", clazz.getAnnotation(Table.class).name());
         data.add(table);
 
-
         for (Field f: fields){
-
             Map<String, String> tmp = new HashMap<>();
-            try {
-                Column column = f.getAnnotation(Column.class);
+
+            Column column = f.getAnnotation(Column.class);
+            if(column!=null) {
                 tmp.put("column", column.name().equals("") ? f.getName().toLowerCase() : column.name().toLowerCase());
                 data.add(tmp);
-
-            } catch (NullPointerException e){
-                System.err.println("Oops");
             }
-            try {
-                PrimaryKey primaryKey = f.getAnnotation(PrimaryKey.class);
+
+            PrimaryKey primaryKey = f.getAnnotation(PrimaryKey.class);
+            if(primaryKey!=null) {
                 tmp.put("primaryKey", primaryKey.name().equals("") ? f.getName().toLowerCase() : primaryKey.name().toLowerCase());
                 data.add(tmp);
-
-            } catch (NullPointerException e){
-                System.err.println("Oops");
             }
         }
-
         return data;
     }
 
@@ -53,12 +45,11 @@ public class SQLGenerator {
 
         StringBuilder sb = new StringBuilder("INSERT INTO ");
         StringBuilder brackets = new StringBuilder(") VALUES (");
+
         for(Map<String,String> d: data){
             if (d.get("table")!=null){
                 sb.append(d.get("table"));
                 sb.append("(");
-
-
             } else {
                 sb.append(d.values().toArray()[0]);
                 sb.append(", ");
@@ -78,22 +69,19 @@ public class SQLGenerator {
         StringBuilder update = new StringBuilder("UPDATE ");
         StringBuilder set = new StringBuilder("SET ");
         StringBuilder where = new StringBuilder(" WHERE ");
+
         for(Map<String,String> d: data){
             if (d.get("table")!=null){
                 update.append(d.get("table"));
                 update.append(" ");
-
-
             }
             if (d.get("column")!=null){
                 set.append(d.get("column"));
                 set.append(" = ?, ");
-
             }
             if (d.get("primaryKey")!=null){
                 where.append(d.get("primaryKey"));
                 where.append(" = ? AND ");
-
             }
         }
         set.setLength(Math.max(set.length() - 2, 0));
@@ -108,17 +96,15 @@ public class SQLGenerator {
 
         StringBuilder delete = new StringBuilder("DELETE FROM ");
         StringBuilder where = new StringBuilder("WHERE ");
+
         for(Map<String,String> d: data){
             if (d.get("table")!=null){
                 delete.append(d.get("table"));
                 delete.append(" ");
-
-
             }
             if (d.get("primaryKey")!=null){
                 where.append(d.get("primaryKey"));
                 where.append(" = ? AND ");
-
             }
         }
         where.setLength(Math.max(where.length() - 5, 0));
@@ -133,22 +119,19 @@ public class SQLGenerator {
         StringBuilder select = new StringBuilder("SELECT ");
         StringBuilder from = new StringBuilder(" FROM ");
         StringBuilder where = new StringBuilder("WHERE ");
+
         for(Map<String,String> d: data){
             if (d.get("table")!=null){
                 from.append(d.get("table"));
                 from.append(" ");
-
-
             }
             if (d.get("column")!=null){
                 select.append(d.get("column"));
                 select.append(", ");
-
             }
             if (d.get("primaryKey")!=null){
                 where.append(d.get("primaryKey"));
                 where.append(" = ? AND ");
-
             }
         }
         select.setLength(Math.max(select.length() - 2, 0));

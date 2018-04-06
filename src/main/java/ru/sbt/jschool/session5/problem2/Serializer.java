@@ -91,7 +91,7 @@ public class Serializer {
 
 
     private  String parseArray(Object arr, int n){
-        String json = "[\n";
+        String json = "\t[\n";
 
         for (int i = 0; n>i; ++i){
 
