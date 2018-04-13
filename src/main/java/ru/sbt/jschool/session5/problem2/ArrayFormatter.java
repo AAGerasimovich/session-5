@@ -19,8 +19,6 @@ public class ArrayFormatter implements JSONTypeFormatter<Object>{
         ctxMap.put("level", ctx.get("level")+"\t");
 
         for (int i = 0; i < (int)ctx.get("length"); ++i) {
-            System.out.println(Array.get(arr, i));
-
             json += formatter.marshall(Array.get(arr, i), ctxMap) + ",\n";
 
         }
